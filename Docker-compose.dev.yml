@@ -1,0 +1,28 @@
+version: "3.2"
+
+services:
+  taller-auth:
+    image: taller-auth-service
+    build:
+      context: .
+    command: uvicorn app.main:app --reload --workers 1 --host 0.0.0.0 --port 8000
+    volumes:
+      - ./:/usr/src/app/
+    ports:
+      - 7082:8000
+    env_file:
+      - .env
+    # environment:
+    #   - TESTING=0
+    #   - WEB_APP_VERSION=0.0.1
+    #   - WEB_APP_TITLE=taller-auth
+    #   - WEB_APP_DESCRIPTION=This is a microservice to authorization in ing web final workshop
+    #   - DATABASE_URL=http://taller-br:8000
+    #   - ENVIROMENT=dev # dev or prod
+    #   - SECRET_KEY=cfd11da5af04ab43747b19afdddfb5a82914a793f21c5209b4c9e2ae3fcad009
+    networks:
+      - taller
+
+networks:
+  taller:
+    external: true
