@@ -1,2 +1,3 @@
+from .employee import CreateEmployee, Employee
 from .token import Token, TokenPayload
-from .user import User
+from .vehicle import BaseVehicle, CreateVehicle, Vehicle

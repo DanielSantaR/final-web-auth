@@ -10,7 +10,7 @@ log = logging.getLogger(__name__)
 
 def create_application() -> FastAPI:
     application = FastAPI()
-    application.include_router(api_router, prefix="/api")
+    application.include_router(api_router, prefix="/api/v1")
     return application
 
 
