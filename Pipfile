@@ -28,6 +28,7 @@ httpx = "*"
 passlib = {extras = ["bcrypt"], version = "*"}
 python-jose = {extras = ["cryptography"], version = "*"}
 uvloop = "*"
+httptools = "*"
 
 [requires]
 python_version = "3.8"
