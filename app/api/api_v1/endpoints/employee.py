@@ -21,7 +21,7 @@ router = APIRouter()
 async def create_employee_admin(
     *,
     employee_in: schemas.CreateEmployee,
-    current_employee: schemas.Employee = Depends(deps.get_current_assitant),
+    current_employee: schemas.Employee = Depends(deps.get_current_assistant),
 ) -> Any:
     """
     Create new employee.

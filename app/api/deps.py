@@ -49,10 +49,10 @@ def get_current_manager(
     return current_employee
 
 
-def get_current_assitant(
+def get_current_assistant(
     current_employee=Security(get_current_active_employee),
 ) -> schemas.Employee:
-    if current_employee["role"] != "assitant":
+    if current_employee["role"] != "assistant":
         raise HTTPException(
             status_code=400, detail="The employee doesn't have enough privileges"
         )
