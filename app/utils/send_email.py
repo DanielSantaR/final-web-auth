@@ -2,17 +2,6 @@ from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
 import smtplib
 
-""" 
-emailTo = "daniel.torresg@udea.edu.co"
-subject = "Correo de Prueba con métodos"
-message = "Este es un correo de prueba, entonces hay que mirar" """
-
-""" SMTP_PASSWORD = "Mauricio8"
-SMTP_USER = "automaticemail8@gmail.com"
-SMTP_HOST = 'smtp.gmail.com'
-SMTP_PORT = '587' """
-
-
 def send_email(*, email_to, subject, message):
     msg = MIMEMultipart()
     message = message 
