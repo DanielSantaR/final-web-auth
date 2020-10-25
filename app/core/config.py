@@ -9,7 +9,6 @@ log = logging.getLogger(__name__)
 
 class Settings(BaseSettings):
     testing: bool = os.getenv("TESTING", 0)
-    ENVIROMENT: str = os.getenv("ENVIROMENT")
     WEB_APP_TITLE: str = os.getenv("WEB_APP_TITLE")
     WEB_APP_DESCRIPTION: str = os.getenv("WEB_APP_DESCRIPTION")
     WEB_APP_VERSION: str = os.getenv("WEB_APP_VERSION")

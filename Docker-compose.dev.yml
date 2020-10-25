@@ -12,14 +12,6 @@ services:
       - 7082:8000
     env_file:
       - .env
-    # environment:
-    #   - TESTING=0
-    #   - WEB_APP_VERSION=0.0.1
-    #   - WEB_APP_TITLE=taller-auth
-    #   - WEB_APP_DESCRIPTION=This is a microservice to authorization in ing web final workshop
-    #   - DATABASE_URL=http://taller-br:8000
-    #   - ENVIROMENT=dev # dev or prod
-    #   - SECRET_KEY=cfd11da5af04ab43747b19afdddfb5a82914a793f21c5209b4c9e2ae3fcad009
     networks:
       - taller
 
