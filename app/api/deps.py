@@ -26,7 +26,7 @@ async def get_current_employee(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Could not validate credentials",
         )
-    employee = await employee_service.get_employee_by_id(employee_id=token_data.sub)
+    employee = await employee_service.get_by_id(employee_id=token_data.sub)
     if not employee:
         raise HTTPException(status_code=404, detail="Employee not found")
     return employee

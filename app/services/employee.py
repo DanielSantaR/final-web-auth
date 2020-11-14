@@ -52,9 +52,7 @@ class EmployeeService:
         )
         return response
 
-    async def get_all(
-        self, *, query_args: EmployeeQueryParams, skip: int, limit: int
-    ) -> List[Employee]:
+    async def get_all(self, *, query_args: EmployeeQueryParams) -> List[Employee]:
         url = f"{settings.DATABASE_URL}/api/employees"
         header = {"Content-Type": "application/json"}
         payload = query_args.__dict__
