@@ -14,7 +14,7 @@ class OwnerService:
     def __init__(self):
         return
 
-    async def get_by_id(self, *, owner_id: int) -> Owner:
+    async def get_by_id(self, *, owner_id: str) -> Owner:
         url = f"{settings.DATABASE_URL}/api/owners/{owner_id}"
         header = {"Content-Type": "application/json"}
         response = await httpx_client.get(

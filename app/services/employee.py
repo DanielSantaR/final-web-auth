@@ -15,7 +15,7 @@ class EmployeeService:
     def __init__(self):
         return
 
-    async def get_by_id(self, *, employee_id: int) -> Employee:
+    async def get_by_id(self, *, employee_id: str) -> Employee:
         url = f"{settings.DATABASE_URL}/api/employees/{employee_id}"
         header = {"Content-Type": "application/json"}
         response = await httpx_client.get(

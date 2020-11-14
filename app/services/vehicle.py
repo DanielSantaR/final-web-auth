@@ -14,7 +14,7 @@ class VehicleService:
     def __init__(self):
         return
 
-    async def get_by_plate(self, *, vehicle_id: int) -> Vehicle:
+    async def get_by_plate(self, *, vehicle_id: str) -> Vehicle:
         url = f"{settings.DATABASE_URL}/api/vehicles/{vehicle_id}"
         header = {"Content-Type": "application/json"}
         response = await httpx_client.get(
