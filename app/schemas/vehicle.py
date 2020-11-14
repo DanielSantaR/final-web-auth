@@ -10,21 +10,12 @@ class BaseVehicle(BaseModel):
     model: str
     color: str
     vehicle_type: str
-    state: str
+    state: str = "received"
 
 
 class CreateVehicle(BaseVehicle):
-    creation_employee: str
-    update_employee: str
-
-
-class PayloadVehicle(BaseModel):
-    plate: Optional[str]
-    brand: Optional[str]
-    model: Optional[str]
-    color: Optional[str]
-    vehicle_type: Optional[str]
-    state: Optional[str]
+    creation_employee_id: str
+    update_employee_id: str
 
 
 class UpdateVehicle(BaseModel):
@@ -36,9 +27,7 @@ class UpdateVehicle(BaseModel):
     state: Optional[str]
 
 
-class VehicleInDB(BaseVehicle):
-    creation_employee_id: str
-    update_employee_id: str
+class VehicleInDB(CreateVehicle):
     created_at: datetime
     last_modified: datetime
 

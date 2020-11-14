@@ -5,37 +5,30 @@ from pydantic import BaseModel
 
 
 class BaseReparationDetail(BaseModel):
-    vehicle: str
-    employee: str
     description: str
-    cost: float
-    spare_parts: List
+    cost: Optional[float]
+    spare_parts: Optional[List[str]]
     state: str
+    vehicle_id: str
+    employee_id: str
 
 
 class CreateReparationDetail(BaseReparationDetail):
     pass
 
 
-class PayloadReparationDetail(BaseModel):
-    vehicle: Optional[int]
-    employee: Optional[str]
-    state: Optional[str]
-
-
 class UpdateReparationDetail(BaseModel):
-    vehicle: int
-    employee: Optional[str]
     description: Optional[str]
     cost: Optional[float]
-    spare_parts: Optional[List]
+    spare_parts: Optional[List[str]]
     state: Optional[str]
 
 
 class ReparationDetailInDB(BaseReparationDetail):
-    # id: int
+    id: int
     created_at: datetime
     last_modified: datetime
 
-    class Config:
-        orm_mode = True
+
+class ReparationDetail(ReparationDetailInDB):
+    pass

@@ -23,10 +23,12 @@ def get(
     try:
         with requests.Session() as client:
             client.mount(
-                "https://", TimeoutHTTPAdapter(timeout=timeout, max_retries=retries),
+                "https://",
+                TimeoutHTTPAdapter(timeout=timeout, max_retries=retries),
             )
             client.mount(
-                "http://", TimeoutHTTPAdapter(timeout=timeout, max_retries=retries),
+                "http://",
+                TimeoutHTTPAdapter(timeout=timeout, max_retries=retries),
             )
             response = client.get(url)
             response = response.json() if response.status_code == 200 else None

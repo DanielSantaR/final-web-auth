@@ -144,19 +144,33 @@ class HTTPXClient:
         self,
         *,
         url_service: AnyHttpUrl,
-        body: bytes,
         status_response: int,
+        timeout: float = 20,
         auth: Optional[Auth] = None,
-        headers: Optional[Dict[str, Any]] = None
-    ) -> bool:
+        params: Optional[Dict[str, Any]] = None,
+        data: Optional[Dict[str, Any]] = None,
+        body: Optional[Dict[str, Any]] = None,
+        headers: Optional[Dict[str, Any]] = None,
+        cookies: Optional[Dict[str, Any]] = None
+    ) -> Optional[Dict[str, Any]]:
+
         try:
             async with AsyncClient() as client:
                 response = await client.patch(
-                    url_service, data=body, headers=headers, auth=auth
+                    url_service,
+                    params=params,
+                    json=body,
+                    data=data,
+                    headers=headers,
+                    cookies=cookies,
+                    timeout=timeout,
+                    auth=auth,
                 )
 
-                response = True if response.status_code == status_response else False
-                return response
+                json_response = (
+                    response.json() if response.status_code == status_response else None
+                )
+                return json_response
         except Exception as e:
             log.error(e)
-            return False
+            return None

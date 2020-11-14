@@ -1,7 +1,7 @@
 from enum import Enum
 from typing import Optional
 
-from app.schemas.user import BaseUser, PayloadUser, UpdateUser, UserInDB
+from app.schemas.user import BaseUser, UpdateUser, UserInDB
 
 
 class Role(str, Enum):
@@ -19,12 +19,6 @@ class BaseEmployee(BaseUser):
 
 class CreateEmployee(BaseEmployee):
     password: str
-
-
-class PayloadEmployee(PayloadUser):
-    username: Optional[str]
-    is_active: Optional[bool]
-    role: Optional[Role]
 
 
 class UpdateEmployee(UpdateUser):

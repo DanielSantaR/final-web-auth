@@ -1,6 +1,7 @@
+from datetime import datetime
 from typing import Optional
 
-from app.schemas.user import BaseUser, PayloadUser, UpdateUser, UserInDB
+from app.schemas.user import BaseUser, UpdateUser, UserInDB
 
 
 class BaseOwner(BaseUser):
@@ -8,23 +9,19 @@ class BaseOwner(BaseUser):
 
 
 class CreateOwner(BaseOwner):
-    creation_employee: str
-    update_employee: str
-
-
-class PayloadOwner(PayloadUser):
-    creation_employee: Optional[str]
-    update_employee: Optional[str]
-    vehicle: Optional[int]
+    creation_employee_id: str
+    update_employee_id: str
 
 
 class UpdateOwner(UpdateUser):
-    update_employee: Optional[str]
-    vehicle: Optional[int]
+    update_employee_id: Optional[str]
 
 
 class OwnerInDB(UserInDB):
-    pass
+    creation_employee_id: str
+    update_employee_id: str
+    created_at: datetime
+    last_modified: datetime
 
 
 class Owner(OwnerInDB):

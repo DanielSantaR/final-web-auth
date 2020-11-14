@@ -29,6 +29,10 @@ passlib = {extras = ["bcrypt"], version = "*"}
 python-jose = {extras = ["cryptography"], version = "*"}
 uvloop = "*"
 httptools = "*"
+debugpy = "*"
+email-validator = "*"
+
+
 
 [requires]
 python_version = "3.8"

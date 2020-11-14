@@ -1,8 +1,8 @@
 version: "3.2"
 
 services:
-  taller-auth:
-    image: taller-auth-service
+  taller-backend:
+    image: taller-backend-service
     build:
       context: .
     command: uvicorn app.main:app --reload --workers 1 --host 0.0.0.0 --port 8000
@@ -10,6 +10,7 @@ services:
       - ./:/usr/src/app/
     ports:
       - 7082:8000
+      - 10002:10001
     env_file:
       - .env
     networks:

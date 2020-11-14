@@ -16,10 +16,12 @@ def put(*, url: str, json: Optional[Dict[str, Any]] = None, timeout: int = 40) -
     try:
         with requests.Session() as client:
             client.mount(
-                "https://", TimeoutHTTPAdapter(timeout=timeout, max_retries=retries),
+                "https://",
+                TimeoutHTTPAdapter(timeout=timeout, max_retries=retries),
             )
             client.mount(
-                "http://", TimeoutHTTPAdapter(timeout=timeout, max_retries=retries),
+                "http://",
+                TimeoutHTTPAdapter(timeout=timeout, max_retries=retries),
             )
 
             response = client.put(url, json=json)

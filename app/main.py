@@ -5,10 +5,13 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.api_v1.api import api_router
 
-log = logging.getLogger(__name__)
+from .debugger import initialize_fastapi_server_debugger_if_needed
+
+log = logging.getLogger("uvicorn.info")
 
 
 def create_application() -> FastAPI:
+    initialize_fastapi_server_debugger_if_needed()
     application = FastAPI()
     application.include_router(api_router, prefix="/api/v1")
     return application

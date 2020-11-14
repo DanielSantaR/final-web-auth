@@ -31,10 +31,12 @@ def post(
     try:
         with requests.Session() as client:
             client.mount(
-                "https://", TimeoutHTTPAdapter(timeout=timeout, max_retries=retries),
+                "https://",
+                TimeoutHTTPAdapter(timeout=timeout, max_retries=retries),
             )
             client.mount(
-                "http://", TimeoutHTTPAdapter(timeout=timeout, max_retries=retries),
+                "http://",
+                TimeoutHTTPAdapter(timeout=timeout, max_retries=retries),
             )
 
             response = client.post(url, files=files, json=json, data=data)
@@ -63,10 +65,12 @@ def post_file(
     try:
         with requests.Session() as client:
             client.mount(
-                "https://", TimeoutHTTPAdapter(timeout=timeout, max_retries=retries),
+                "https://",
+                TimeoutHTTPAdapter(timeout=timeout, max_retries=retries),
             )
             client.mount(
-                "http://", TimeoutHTTPAdapter(timeout=timeout, max_retries=retries),
+                "http://",
+                TimeoutHTTPAdapter(timeout=timeout, max_retries=retries),
             )
 
             response = client.post(url, files=files, json=json, data=data)
