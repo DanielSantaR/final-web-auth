@@ -145,6 +145,8 @@ async def update_employee(
     employee = await employee_service.update(
         employee_id=employee_id, employee_in=employee_in
     )
+    if not employee:
+        return JSONResponse(status_code=404, content={"detail": "No employee found"})
     return employee
 
 
@@ -168,6 +170,8 @@ async def get_employee_by_id(
     Gets employee's profile.
     """
     employee = await employee_service.get_by_id(employee_id=employee_id)
+    if not employee:
+        return JSONResponse(status_code=404, content={"detail": "No employee found"})
     return employee
 
 
@@ -182,11 +186,11 @@ async def get_employee_by_id(
     },
 )
 async def get_all(
-    *, query_args: EmployeeQueryParams = Depends(), skip: int = 0, limit: int = 99999
+    *,
+    query_args: EmployeeQueryParams = Depends(),
+    current_employee: Employee = Depends(deps.get_current_active_employee),
 ):
-    employees = await employee_service.get_all(
-        query_args=query_args, skip=skip, limit=limit
-    )
+    employees = await employee_service.get_all(query_args=query_args)
     if employees:
         return employees
     return []

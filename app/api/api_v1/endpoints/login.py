@@ -6,8 +6,11 @@ from fastapi.security import OAuth2PasswordRequestForm
 
 from app.core import security
 from app.core.config import Settings, get_settings
+from app.schemas.owner_token import CreateOwnerToken
 from app.schemas.token import Token
 from app.services.auth import auth_service
+from app.services.owner_token import owner_token_service
+from app.utils.send_email import send_email
 
 # from app.api import deps
 # from app.core.security import get_password_hash
@@ -42,6 +45,51 @@ async def login_access_token(form_data: OAuth2PasswordRequestForm = Depends()) -
         ),
         "token_type": "bearer",
     }
+
+
+@router.post("/owners/access-token")
+async def owner_access_token(identity_card: str) -> Any:
+    owner = await auth_service.owner_authenticate(identity_card=identity_card)
+    if not owner:
+        raise HTTPException(
+            status_code=400,
+            detail="there is no owner with this document, please contact the workshop staff.",
+        )
+
+    access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+    code = security.get_random_alphanumeric_string(8)
+
+    owner_token = CreateOwnerToken(
+        owner_id=identity_card,
+        code=code,
+        token=security.create_access_token(
+            owner.identity_card, expires_delta=access_token_expires
+        ),
+        token_type="bearer",
+    )
+    response = await owner_token_service.create(owner_token_in=owner_token)
+
+    if not response:
+        raise HTTPException(
+            status_code=400,
+            detail="Something went wrong, try again in 5 minutes :(",
+        )
+
+    # Enviar correo/mensaje con el código
+
+    flag = send_email(
+        email_to=owner.email,
+        subject="Access code",
+        message=f"This is your access code {code}",
+    )
+
+    if not flag:
+        raise HTTPException(
+            status_code=400,
+            detail="Something went wrong, try again in 5 minutes :(",
+        )
+
+    return True
 
 
 # @router.post("/login/test-token", response_model=schemas.User)

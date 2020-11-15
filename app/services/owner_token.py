@@ -2,34 +2,34 @@ from typing import List
 
 from app.core.config import Settings, get_settings
 from app.infra.httpx.client import HTTPXClient
-from app.schemas.search import VehicleQueryParams
-from app.schemas.vehicle import CreateVehicle, UpdateVehicle, Vehicle, VehicleInDB
+from app.schemas.owner_token import CreateOwnerToken, OwnerToken
+from app.schemas.search import OwnerTokenQueryParams
 
 httpx_client = HTTPXClient()
 
 settings: Settings = get_settings()
 
 
-class VehicleService:
+class OwnerTokenService:
     def __init__(self):
         return
 
-    async def get_by_plate(self, *, vehicle_id: str) -> Vehicle:
-        url = f"{settings.DATABASE_URL}/api/vehicles/{vehicle_id}"
+    async def get_by_code(self, *, owner_token_id: str) -> OwnerToken:
+        url = f"{settings.DATABASE_URL}/api/owner-tokens/{owner_token_id}"
         header = {"Content-Type": "application/json"}
         response = await httpx_client.get(
             url_service=url, status_response=200, headers=header, timeout=40
         )
         return response
 
-    async def create(self, *, vehicle_in: CreateVehicle) -> CreateVehicle:
-        url = f"{settings.DATABASE_URL}/api/vehicles"
+    async def create(self, *, owner_token_in: CreateOwnerToken) -> CreateOwnerToken:
+        url = f"{settings.DATABASE_URL}/api/owner-tokens"
         header = {"Content-Type": "application/json"}
-        vehicle = vehicle_in.dict()
+        owner_token = owner_token_in.dict()
         response = await httpx_client.post(
             url_service=url,
             status_response=201,
-            body=vehicle,
+            body=owner_token,
             headers=header,
             timeout=40,
         )
@@ -38,9 +38,9 @@ class VehicleService:
     async def get_all(
         self,
         *,
-        query_args: VehicleQueryParams,
-    ) -> List[Vehicle]:
-        url = f"{settings.DATABASE_URL}/api/vehicles"
+        query_args: OwnerTokenQueryParams,
+    ) -> List[OwnerToken]:
+        url = f"{settings.DATABASE_URL}/api/owner-tokens"
         header = {"Content-Type": "application/json"}
         payload = query_args.__dict__
         params = {
@@ -55,16 +55,13 @@ class VehicleService:
         )
         return response
 
-    async def update(
-        self, *, vehicle_id: str, vehicle_in: UpdateVehicle
-    ) -> VehicleInDB:
-        url = f"{settings.DATABASE_URL}/api/vehicles/{vehicle_id}"
+    async def delete(self, *, owner_token_id: str) -> OwnerToken:
+        url = f"{settings.DATABASE_URL}/api/owner-tokens/{owner_token_id}"
         header = {"Content-Type": "application/json"}
-        user = vehicle_in.dict()
-        response = await httpx_client.patch(
-            url_service=url, status_response=200, body=user, headers=header, timeout=40
+        response = await httpx_client.delete(
+            url_service=url, status_response=204, headers=header, timeout=40
         )
         return response
 
 
-vehicle_service = VehicleService()
+owner_token_service = OwnerTokenService()

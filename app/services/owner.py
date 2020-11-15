@@ -2,34 +2,34 @@ from typing import List
 
 from app.core.config import Settings, get_settings
 from app.infra.httpx.client import HTTPXClient
-from app.schemas.search import VehicleQueryParams
-from app.schemas.vehicle import CreateVehicle, UpdateVehicle, Vehicle, VehicleInDB
+from app.schemas.owner import CreateOwner, Owner, OwnerInDB, UpdateOwner
+from app.schemas.search import OwnerQueryParams
 
 httpx_client = HTTPXClient()
 
 settings: Settings = get_settings()
 
 
-class VehicleService:
+class OwnerService:
     def __init__(self):
         return
 
-    async def get_by_plate(self, *, vehicle_id: str) -> Vehicle:
-        url = f"{settings.DATABASE_URL}/api/vehicles/{vehicle_id}"
+    async def get_by_id(self, *, owner_id: str) -> Owner:
+        url = f"{settings.DATABASE_URL}/api/owners/{owner_id}"
         header = {"Content-Type": "application/json"}
         response = await httpx_client.get(
             url_service=url, status_response=200, headers=header, timeout=40
         )
         return response
 
-    async def create(self, *, vehicle_in: CreateVehicle) -> CreateVehicle:
-        url = f"{settings.DATABASE_URL}/api/vehicles"
+    async def create(self, *, owner_in: CreateOwner) -> CreateOwner:
+        url = f"{settings.DATABASE_URL}/api/owners"
         header = {"Content-Type": "application/json"}
-        vehicle = vehicle_in.dict()
+        owner = owner_in.dict()
         response = await httpx_client.post(
             url_service=url,
             status_response=201,
-            body=vehicle,
+            body=owner,
             headers=header,
             timeout=40,
         )
@@ -38,9 +38,9 @@ class VehicleService:
     async def get_all(
         self,
         *,
-        query_args: VehicleQueryParams,
-    ) -> List[Vehicle]:
-        url = f"{settings.DATABASE_URL}/api/vehicles"
+        query_args: OwnerQueryParams,
+    ) -> List[Owner]:
+        url = f"{settings.DATABASE_URL}/api/owners"
         header = {"Content-Type": "application/json"}
         payload = query_args.__dict__
         params = {
@@ -55,16 +55,14 @@ class VehicleService:
         )
         return response
 
-    async def update(
-        self, *, vehicle_id: str, vehicle_in: UpdateVehicle
-    ) -> VehicleInDB:
-        url = f"{settings.DATABASE_URL}/api/vehicles/{vehicle_id}"
+    async def update(self, *, owner_id: str, owner_in: UpdateOwner) -> OwnerInDB:
+        url = f"{settings.DATABASE_URL}/api/owners/{owner_id}"
         header = {"Content-Type": "application/json"}
-        user = vehicle_in.dict()
+        user = owner_in.dict()
         response = await httpx_client.patch(
             url_service=url, status_response=200, body=user, headers=header, timeout=40
         )
         return response
 
 
-vehicle_service = VehicleService()
+owner_service = OwnerService()

@@ -15,7 +15,7 @@ class EmployeeService:
     def __init__(self):
         return
 
-    async def get_by_id(self, *, employee_id: int) -> Employee:
+    async def get_by_id(self, *, employee_id: str) -> Employee:
         url = f"{settings.DATABASE_URL}/api/employees/{employee_id}"
         header = {"Content-Type": "application/json"}
         response = await httpx_client.get(
@@ -52,9 +52,7 @@ class EmployeeService:
         )
         return response
 
-    async def get_all(
-        self, *, query_args: EmployeeQueryParams, skip: int, limit: int
-    ) -> List[Employee]:
+    async def get_all(self, *, query_args: EmployeeQueryParams) -> List[Employee]:
         url = f"{settings.DATABASE_URL}/api/employees"
         header = {"Content-Type": "application/json"}
         payload = query_args.__dict__

@@ -1,7 +1,7 @@
 import logging
 from typing import Any, Dict, Optional
 
-from httpx import AsyncClient, Auth
+from httpx._client import AsyncClient, Auth
 from pydantic import AnyHttpUrl
 
 log = logging.getLogger(__name__)
@@ -122,7 +122,7 @@ class HTTPXClient:
         params: Optional[Dict[str, Any]] = None,
         headers: Optional[Dict[str, Any]] = None,
         cookies: Optional[Dict[str, Any]] = None
-    ) -> Optional[Dict[str, Any]]:
+    ) -> Optional[int]:
 
         try:
             async with AsyncClient() as client:
