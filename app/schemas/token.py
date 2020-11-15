@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from pydantic import BaseModel
 
 
@@ -8,3 +10,7 @@ class Token(BaseModel):
 
 class TokenPayload(BaseModel):
     sub: str
+
+
+class OwnerTokenPayload(TokenPayload):
+    exp: datetime

@@ -1,3 +1,5 @@
+import random
+import string
 from datetime import datetime, timedelta
 from typing import Any, Union
 
@@ -33,3 +35,9 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
 
 def get_password_hash(password: str) -> str:
     return pwd_context.hash(password)
+
+
+def get_random_alphanumeric_string(length):
+    letters_and_digits = string.ascii_letters + string.digits
+    result_str = "".join(random.choice(letters_and_digits) for i in range(length))
+    return result_str

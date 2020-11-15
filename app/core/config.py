@@ -15,6 +15,10 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 8
     ALGORITHM: str
     DATABASE_URL: AnyUrl
+    SMTP_PASSWORD: str
+    SMTP_USER: str
+    SMTP_HOST: str
+    SMTP_PORT: str
 
 
 @lru_cache()

@@ -18,8 +18,8 @@ class UpdateOwner(UpdateUser):
 
 
 class OwnerInDB(UserInDB):
-    creation_employee_id: str
-    update_employee_id: str
+    creation_employee_id: Optional[str]
+    update_employee_id: Optional[str]
     created_at: datetime
     last_modified: datetime
 

@@ -8,12 +8,40 @@ from app.core.config import Settings, get_settings
 from app.schemas.employee import Employee
 from app.schemas.owner import BaseOwner, CreateOwner, Owner, UpdateOwner
 from app.schemas.search import OwnerQueryParams
+from app.schemas.token import Token
 from app.services.owner import owner_service
+from app.services.owner_token import owner_token_service
 
 settings: Settings = get_settings()
 
 
 router = APIRouter()
+
+
+@router.post(
+    "owners/login",
+    response_model=Token,
+    response_class=JSONResponse,
+    status_code=200,
+    responses={
+        200: {"description": "Owner logged"},
+        401: {"description": "User unauthorized"},
+        400: {"description": "Bad request"},
+    },
+)
+async def owner_login(code: str):
+    owner_token = await owner_token_service.get_by_code(owner_token_id=code)
+    if not owner_token:
+        raise HTTPException(
+            status_code=400,
+            detail="Something went wrong, try logging in again :(",
+        )
+    await deps.get_current_owner(token=owner_token["token"])
+    await owner_token_service.delete(owner_token_id=code)
+    return {
+        "access_token": owner_token["token"],
+        "token_type": owner_token["token_type"],
+    }
 
 
 @router.post(
@@ -35,8 +63,8 @@ async def create(
     """
     Create new owner.
     """
-    owner_plate = await owner_service.get_by_id(owner_id=owner_in.plate)
-    if owner_plate:
+    owner_id = await owner_service.get_by_id(owner_id=owner_in.identity_card)
+    if owner_id:
         raise HTTPException(
             status_code=400,
             detail=f"The owner with id {owner_in.identity_card} already exists in the system.",
