@@ -59,43 +59,43 @@ async def create_employee_admin(
     return employee
 
 
-@router.post(
-    "/internal",
-    response_class=JSONResponse,
-    response_model=Employee,
-    status_code=201,
-    responses={
-        201: {"description": "Employee created"},
-        401: {"description": "User unauthorized"},
-        404: {"description": "Employee not found"},
-    },
-)
-async def create_employee_internal(
-    *,
-    employee_in: CreateEmployee,
-) -> Any:
-    """
-    Create new employee.
-    """
-    employee_username = await employee_service.get_by_username(
-        username=employee_in.username
-    )
-    if employee_username:
-        raise HTTPException(
-            status_code=400,
-            detail="The employee with this username already exists in the system.",
-        )
+# @router.post(
+#     "/internal",
+#     response_class=JSONResponse,
+#     response_model=Employee,
+#     status_code=201,
+#     responses={
+#         201: {"description": "Employee created"},
+#         401: {"description": "User unauthorized"},
+#         404: {"description": "Employee not found"},
+#     },
+# )
+# async def create_employee_internal(
+#     *,
+#     employee_in: CreateEmployee,
+# ) -> Any:
+#     """
+#     Create new employee.
+#     """
+#     employee_username = await employee_service.get_by_username(
+#         username=employee_in.username
+#     )
+#     if employee_username:
+#         raise HTTPException(
+#             status_code=400,
+#             detail="The employee with this username already exists in the system.",
+#         )
 
-    employee_id = await employee_service.get_by_id(
-        employee_id=employee_in.identity_card
-    )
-    if employee_id:
-        raise HTTPException(
-            status_code=400,
-            detail="The employee with this identity card already exists in the system.",
-        )
-    employee = await employee_service.create(employee_in=employee_in)
-    return employee
+#     employee_id = await employee_service.get_by_id(
+#         employee_id=employee_in.identity_card
+#     )
+#     if employee_id:
+#         raise HTTPException(
+#             status_code=400,
+#             detail="The employee with this identity card already exists in the system.",
+#         )
+#     employee = await employee_service.create(employee_in=employee_in)
+#     return employee
 
 
 @router.get(

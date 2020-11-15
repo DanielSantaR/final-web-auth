@@ -19,7 +19,7 @@ router = APIRouter()
 
 
 @router.post(
-    "owners/login",
+    "/login",
     response_model=Token,
     response_class=JSONResponse,
     status_code=200,
