@@ -10,7 +10,7 @@ from app.schemas.owner_token import CreateOwnerToken
 from app.schemas.token import Token
 from app.services.auth import auth_service
 from app.services.owner_token import owner_token_service
-from app.utils.send_email import send_email
+from app.utils.send_email import send_code_email
 
 # from app.api import deps
 # from app.core.security import get_password_hash
@@ -77,10 +77,9 @@ async def owner_access_token(identity_card: str) -> Any:
 
     # Enviar correo/mensaje con el código
 
-    flag = send_email(
+    flag = send_code_email(
         email_to=owner.email,
-        subject="Access code",
-        message=f"This is your access code {code}",
+        code=code,
     )
 
     if not flag:

@@ -20,7 +20,7 @@ def send_email(*, email_to: str, subject: str, message: str) -> bool:
         msg["To"] = email_to
         msg["Subject"] = subject
         # add in the message body
-        msg.attach(MIMEText(message, "plain"))
+        msg.attach(message)
         # create server
         server = smtplib.SMTP(f"{settings.SMTP_HOST}:{settings.SMTP_PORT}")
         server.starttls()
@@ -33,3 +33,18 @@ def send_email(*, email_to: str, subject: str, message: str) -> bool:
     except Exception as e:
         print(e)
         return False
+
+def send_code_email(*, email_to: str, code: str):
+    with open("./app/email_templates/send_code.html") as f:
+        template_str = f.read()
+    subject = "Security Code"
+    message = MIMEText(template_str.format(code=code), 'html')
+    send_email(email_to = email_to, subject = subject, message = message)
+
+
+def send_new_account(*, email_to: str, name: str, username: str):
+    with open("./app/email_templates/new_account.html") as f:
+        template_str = f.read()
+    subject = "Thanks for Create a new Account"
+    message = MIMEText(template_str.format(name=name, username=username), 'html')
+    send_email(email_to = email_to, subject = subject, message = message)
