@@ -78,6 +78,28 @@ async def create(
     owner = await owner_service.create(owner_in=owner)
     return owner
 
+@router.get(
+    "/me",
+    response_class=JSONResponse,
+    response_model=Owner,
+    status_code=200,
+    responses={
+        200: {"description": "Owner found"},
+        401: {"description": "User unauthorized"},
+        404: {"description": "Owner not found"},
+    },
+)
+async def get_profile(
+    *,
+    current_owner: Owner = Depends(deps.get_current_owner),
+) -> Any:
+    """
+    Gets current owner's profile.
+    """
+    owner = await owner_service.get_by_id(
+        owner_id=current_owner["identity_card"]
+    )
+    return owner
 
 @router.get(
     "/{owner_id}",
