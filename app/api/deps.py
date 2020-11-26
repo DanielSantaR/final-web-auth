@@ -1,4 +1,4 @@
-from fastapi import HTTPException, Security, status
+from fastapi import Header, HTTPException, Security, status
 from fastapi.security import OAuth2PasswordBearer
 from jose import jwt
 from pydantic import ValidationError
@@ -17,7 +17,7 @@ not_reusable_oauth2 = OAuth2PasswordBearer(tokenUrl="/api/v1/owners/access-token
 
 
 async def get_current_owner(
-    token: str = Security(not_reusable_oauth2),
+    token: str = Header(...),
 ) -> Owner:
     try:
         payload = jwt.decode(

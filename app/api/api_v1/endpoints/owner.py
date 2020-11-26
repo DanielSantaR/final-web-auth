@@ -1,47 +1,20 @@
 from typing import Any, List
 
 from fastapi import APIRouter, Depends, HTTPException
-from starlette.responses import JSONResponse
+from starlette.responses import JSONResponse, Response
 
 from app.api import deps
 from app.core.config import Settings, get_settings
 from app.schemas.employee import Employee
 from app.schemas.owner import BaseOwner, CreateOwner, Owner, UpdateOwner
 from app.schemas.search import OwnerQueryParams
-from app.schemas.token import Token
+from app.schemas.vehicle import Vehicle
 from app.services.owner import owner_service
-from app.services.owner_token import owner_token_service
 
 settings: Settings = get_settings()
 
 
 router = APIRouter()
-
-
-@router.post(
-    "/login",
-    response_model=Token,
-    response_class=JSONResponse,
-    status_code=200,
-    responses={
-        200: {"description": "Owner logged"},
-        401: {"description": "User unauthorized"},
-        400: {"description": "Bad request"},
-    },
-)
-async def owner_login(code: str):
-    owner_token = await owner_token_service.get_by_code(owner_token_id=code)
-    if not owner_token:
-        raise HTTPException(
-            status_code=400,
-            detail="Something went wrong, try logging in again :(",
-        )
-    await deps.get_current_owner(token=owner_token["token"])
-    await owner_token_service.delete(owner_token_id=code)
-    return {
-        "access_token": owner_token["token"],
-        "token_type": owner_token["token_type"],
-    }
 
 
 @router.post(
@@ -78,6 +51,7 @@ async def create(
     owner = await owner_service.create(owner_in=owner)
     return owner
 
+
 @router.get(
     "/me",
     response_class=JSONResponse,
@@ -96,10 +70,9 @@ async def get_profile(
     """
     Gets current owner's profile.
     """
-    owner = await owner_service.get_by_id(
-        owner_id=current_owner["identity_card"]
-    )
+    owner = await owner_service.get_by_id(owner_id=current_owner["identity_card"])
     return owner
+
 
 @router.get(
     "/{owner_id}",
@@ -147,6 +120,30 @@ async def get_all(
     return []
 
 
+@router.get(
+    "/vehicles",
+    response_class=JSONResponse,
+    response_model=List[Vehicle],
+    status_code=200,
+    responses={
+        200: {"description": "Owner found"},
+        401: {"description": "User unauthorized"},
+        404: {"description": "Owner not found"},
+    },
+)
+async def get_owners_vehicles(
+    *,
+    current_owner: Owner = Depends(deps.get_current_owner),
+) -> Any:
+    """
+    Gets owner's vehicles information.
+    """
+    vehicles = await owner_service.get_owner_vehicles(
+        owner_id=current_owner["identity_card"]
+    )
+    return vehicles
+
+
 @router.patch(
     "/{owner_id}",
     response_class=JSONResponse,
@@ -171,3 +168,21 @@ async def update_owner(
     if not owner:
         return JSONResponse(status_code=404, content={"detail": "No owner found"})
     return owner
+
+
+@router.delete(
+    "/vehicle/{vehicle_id}/owner_id/{owner_id}",
+    response_class=Response,
+    status_code=204,
+    responses={
+        204: {"description": "VehicleXOwner deleted"},
+        401: {"description": "User unauthorized"},
+        404: {"description": "VehicleXOwner not found"},
+    },
+)
+async def remove(*, owner_id: str, vehicle_id: str):
+    vehicle_x_owner_remove = await owner_service.delete(
+        owner_id=owner_id, vehicle_id=vehicle_id
+    )
+    status_code = 204 if vehicle_x_owner_remove == 1 else 404
+    return Response(status_code=status_code)

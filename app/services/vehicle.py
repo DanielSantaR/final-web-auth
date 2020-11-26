@@ -2,8 +2,10 @@ from typing import List
 
 from app.core.config import Settings, get_settings
 from app.infra.httpx.client import HTTPXClient
+from app.schemas.owner import Owner
 from app.schemas.search import VehicleQueryParams
 from app.schemas.vehicle import CreateVehicle, UpdateVehicle, Vehicle, VehicleInDB
+from app.schemas.vehicle_x_owner import VehicleXOwner
 
 httpx_client = HTTPXClient()
 
@@ -35,6 +37,21 @@ class VehicleService:
         )
         return response
 
+    async def create_owner_vehicle(
+        self, *, vehicle_id: str, owner_id: str
+    ) -> VehicleXOwner:
+        url = f"{settings.DATABASE_URL}/api/vehicles-x-owners"
+        header = {"Content-Type": "application/json"}
+        owner_vehicle = {"vehicle_id": vehicle_id, "owner_id": owner_id}
+        response = await httpx_client.post(
+            url_service=url,
+            status_response=201,
+            body=owner_vehicle,
+            headers=header,
+            timeout=40,
+        )
+        return response
+
     async def get_all(
         self,
         *,
@@ -52,6 +69,16 @@ class VehicleService:
             params=params,
             headers=header,
             timeout=40,
+        )
+        return response
+
+    async def get_vehicle_owners(self, *, vehicle_id: str) -> List[Owner]:
+        url = (
+            f"{settings.DATABASE_URL}/api/vehicles-x-owners/vehicle/{vehicle_id}/owners"
+        )
+        header = {"Content-Type": "application/json"}
+        response = await httpx_client.get(
+            url_service=url, status_response=200, headers=header, timeout=40
         )
         return response
 

@@ -3,7 +3,9 @@ from typing import Any
 
 from fastapi import APIRouter, Depends, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
+from starlette.responses import JSONResponse
 
+from app.api import deps
 from app.core import security
 from app.core.config import Settings, get_settings
 from app.schemas.owner_token import CreateOwnerToken
@@ -11,9 +13,6 @@ from app.schemas.token import Token
 from app.services.auth import auth_service
 from app.services.owner_token import owner_token_service
 from app.utils.send_email import send_code_email
-
-# from app.api import deps
-# from app.core.security import get_password_hash
 
 # from app.utils import (
 #     generate_password_reset_token,
@@ -59,6 +58,12 @@ async def owner_access_token(identity_card: str) -> Any:
     access_token_expires = timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     code = security.get_random_alphanumeric_string(8)
 
+    while True:
+        response = await owner_token_service.get_by_code(owner_token_id=code)
+        if not response:
+            break
+        code = security.get_random_alphanumeric_string(8)
+
     owner_token = CreateOwnerToken(
         owner_id=identity_card,
         code=code,
@@ -89,6 +94,32 @@ async def owner_access_token(identity_card: str) -> Any:
         )
 
     return True
+
+
+@router.post(
+    "/login",
+    response_model=Token,
+    response_class=JSONResponse,
+    status_code=200,
+    responses={
+        200: {"description": "Owner logged"},
+        401: {"description": "User unauthorized"},
+        400: {"description": "Bad request"},
+    },
+)
+async def owner_login(code: str):
+    owner_token = await owner_token_service.get_by_code(owner_token_id=code)
+    if not owner_token:
+        raise HTTPException(
+            status_code=400,
+            detail="Something went wrong, try logging in again :(",
+        )
+    await deps.get_current_owner(token=owner_token["token"])
+    await owner_token_service.delete(owner_token_id=code)
+    return {
+        "access_token": owner_token["token"],
+        "token_type": owner_token["token_type"],
+    }
 
 
 # @router.post("/login/test-token", response_model=schemas.User)
