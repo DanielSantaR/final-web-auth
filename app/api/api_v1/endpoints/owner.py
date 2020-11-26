@@ -75,6 +75,30 @@ async def get_profile(
 
 
 @router.get(
+    "/vehicles",
+    response_class=JSONResponse,
+    response_model=List[Vehicle],
+    status_code=200,
+    responses={
+        200: {"description": "Owner found"},
+        401: {"description": "User unauthorized"},
+        404: {"description": "Owner not found"},
+    },
+)
+async def get_owners_vehicles(
+    *,
+    current_owner: Owner = Depends(deps.get_current_owner),
+) -> Any:
+    """
+    Gets owner's vehicles information.
+    """
+    vehicles = await owner_service.get_owner_vehicles(
+        owner_id=current_owner["identity_card"]
+    )
+    return vehicles
+
+
+@router.get(
     "/{owner_id}",
     response_class=JSONResponse,
     response_model=Owner,
@@ -118,30 +142,6 @@ async def get_all(
     if owners:
         return owners
     return []
-
-
-@router.get(
-    "/vehicles",
-    response_class=JSONResponse,
-    response_model=List[Vehicle],
-    status_code=200,
-    responses={
-        200: {"description": "Owner found"},
-        401: {"description": "User unauthorized"},
-        404: {"description": "Owner not found"},
-    },
-)
-async def get_owners_vehicles(
-    *,
-    current_owner: Owner = Depends(deps.get_current_owner),
-) -> Any:
-    """
-    Gets owner's vehicles information.
-    """
-    vehicles = await owner_service.get_owner_vehicles(
-        owner_id=current_owner["identity_card"]
-    )
-    return vehicles
 
 
 @router.patch(
