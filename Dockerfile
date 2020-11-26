@@ -24,4 +24,4 @@ RUN pip install -r requirements.txt
 COPY . .
 EXPOSE 80
 # run entrypoint.sh for wait a conainer
-ENTRYPOINT ["/usr/src/app/entrypoint.sh"]
+# ENTRYPOINT ["/usr/src/app/entrypoint.sh"]

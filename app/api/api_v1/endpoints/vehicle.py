@@ -6,6 +6,7 @@ from starlette.responses import JSONResponse
 from app.api import deps
 from app.core.config import Settings, get_settings
 from app.schemas.employee import Employee
+from app.schemas.owner import Owner
 from app.schemas.search import VehicleQueryParams
 from app.schemas.vehicle import BaseVehicle, CreateVehicle, UpdateVehicle, Vehicle
 from app.services.vehicle import vehicle_service
@@ -97,6 +98,29 @@ async def get_all(
     return []
 
 
+@router.get(
+    "/{vehicle_id}/vehicles",
+    response_class=JSONResponse,
+    response_model=List[Owner],
+    status_code=200,
+    responses={
+        200: {"description": "Owner found"},
+        401: {"description": "User unauthorized"},
+        404: {"description": "Owner not found"},
+    },
+)
+async def get_owners_vehicles(
+    *,
+    vehicle_id: str,
+    current_employee: Employee = Depends(deps.get_current_active_employee),
+) -> Any:
+    """
+    Gets vehicle's owners information.
+    """
+    owners = await vehicle_service.get_vehicle_owners(vehicle_id=vehicle_id)
+    return owners
+
+
 @router.patch(
     "/{vehicle_id}",
     response_class=JSONResponse,
@@ -120,4 +144,29 @@ async def update_vehicle(
     vehicle = await vehicle_service.update(vehicle_id=vehicle_id, vehicle_in=vehicle_in)
     if not vehicle:
         return JSONResponse(status_code=404, content={"detail": "No vehicle found"})
+    return vehicle
+
+
+@router.post(
+    "/{vehicle_id}",
+    response_class=JSONResponse,
+    status_code=201,
+    responses={
+        201: {"description": "Vehicles owner created"},
+        401: {"description": "User unauthorized"},
+        404: {"description": "Vehicles owner not found"},
+    },
+)
+async def create_owner_vehicle(
+    *,
+    vehicle_id: str,
+    owner_id: str,
+    current_employee: Employee = Depends(deps.get_current_techician),
+) -> Any:
+    """
+    Create new owner vehicle.
+    """
+    vehicle = await vehicle_service.create_owner_vehicle(
+        vehicle_id=vehicle_id, owner_id=owner_id
+    )
     return vehicle

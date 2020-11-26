@@ -8,6 +8,7 @@ from app.core.config import Settings, get_settings
 from app.schemas.employee import CreateEmployee, Employee, UpdateEmployee
 from app.schemas.search import EmployeeQueryParams
 from app.services.employee import employee_service
+from app.utils.send_email import send_new_account
 
 settings: Settings = get_settings()
 
@@ -52,10 +53,12 @@ async def create_employee_admin(
             detail="The employee with this identity card already exists in the system.",
         )
     employee = await employee_service.create(employee_in=employee_in)
-    # if settings.EMAILS_ENABLED and employee_in.email:
-    #     send_new_account_email(
-    #         email_to=employee_in.email, username=employee_in.email, password=employee_in.password
-    #     )
+    if employee_in.email:
+        send_new_account(
+            email_to=employee_in.email,
+            username=employee_in.username,
+            name=employee_in.names,
+        )
     return employee
 
 

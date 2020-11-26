@@ -4,6 +4,7 @@ from app.core.config import Settings, get_settings
 from app.infra.httpx.client import HTTPXClient
 from app.schemas.owner import CreateOwner, Owner, OwnerInDB, UpdateOwner
 from app.schemas.search import OwnerQueryParams
+from app.schemas.vehicle import Vehicle
 
 httpx_client = HTTPXClient()
 
@@ -16,6 +17,14 @@ class OwnerService:
 
     async def get_by_id(self, *, owner_id: str) -> Owner:
         url = f"{settings.DATABASE_URL}/api/owners/{owner_id}"
+        header = {"Content-Type": "application/json"}
+        response = await httpx_client.get(
+            url_service=url, status_response=200, headers=header, timeout=40
+        )
+        return response
+
+    async def get_owner_vehicles(self, *, owner_id: str) -> List[Vehicle]:
+        url = f"{settings.DATABASE_URL}/api/vehicles-x-owners/owner/{owner_id}/vehicles"
         header = {"Content-Type": "application/json"}
         response = await httpx_client.get(
             url_service=url, status_response=200, headers=header, timeout=40
@@ -61,6 +70,14 @@ class OwnerService:
         user = owner_in.dict()
         response = await httpx_client.patch(
             url_service=url, status_response=200, body=user, headers=header, timeout=40
+        )
+        return response
+
+    async def delete(self, *, owner_id: str, vehicle_id: str) -> int:
+        url = f"{settings.DATABASE_URL}/api/vehicles-x-owners/vehicle/{vehicle_id}/owner/{owner_id}"
+        header = {"Content-Type": "application/json"}
+        response = await httpx_client.delete(
+            url_service=url, status_response=204, headers=header, timeout=40
         )
         return response
 
