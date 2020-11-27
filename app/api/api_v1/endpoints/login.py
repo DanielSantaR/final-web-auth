@@ -97,7 +97,7 @@ async def owner_access_token(identity_card: str) -> Any:
 
 
 @router.post(
-    "/login",
+    "owners/login",
     response_model=Token,
     response_class=JSONResponse,
     status_code=200,
