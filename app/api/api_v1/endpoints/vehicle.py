@@ -99,7 +99,7 @@ async def get_all(
 
 
 @router.get(
-    "/{vehicle_id}/vehicles",
+    "/{vehicle_id}/owners",
     response_class=JSONResponse,
     response_model=List[Owner],
     status_code=200,
