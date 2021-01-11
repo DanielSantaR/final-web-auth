@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 from app.core.config import Settings, get_settings
 from app.infra.httpx.client import HTTPXClient
@@ -56,7 +56,7 @@ class VehicleService:
         self,
         *,
         query_args: VehicleQueryParams,
-    ) -> List[Vehicle]:
+    ) -> Optional[List[Vehicle]]:
         url = f"{settings.DATABASE_URL}/api/vehicles"
         header = {"Content-Type": "application/json"}
         payload = query_args.__dict__

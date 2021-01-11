@@ -1,18 +1,15 @@
-from typing import Any, List
+from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException
 from starlette.responses import JSONResponse
 
 from app.api import deps
-from app.core.config import Settings, get_settings
 from app.schemas.employee import Employee
 from app.schemas.owner import Owner
 from app.schemas.search import VehicleQueryParams
 from app.schemas.vehicle import BaseVehicle, CreateVehicle, UpdateVehicle, Vehicle
+from app.schemas.vehicle_x_owner import VehicleXOwner
 from app.services.vehicle import vehicle_service
-
-settings: Settings = get_settings()
-
 
 router = APIRouter()
 
@@ -32,7 +29,7 @@ async def create_vehicle(
     *,
     vehicle_in: BaseVehicle,
     current_employee: Employee = Depends(deps.get_current_techician),
-) -> Any:
+) -> Vehicle:
     """
     Create new vehicle.
     """
@@ -67,7 +64,7 @@ async def get_vehicle_by_id(
     *,
     vehicle_id: str,
     current_employee: Employee = Depends(deps.get_current_active_employee),
-) -> Any:
+) -> Vehicle:
     """
     Gets vehicle's information.
     """
@@ -91,7 +88,7 @@ async def get_all(
     *,
     query_args: VehicleQueryParams = Depends(),
     current_employee: Employee = Depends(deps.get_current_active_employee),
-):
+) -> Optional[List[Vehicle]]:
     vehicles = await vehicle_service.get_all(query_args=query_args)
     if vehicles:
         return vehicles
@@ -113,7 +110,7 @@ async def get_owners_vehicles(
     *,
     vehicle_id: str,
     current_employee: Employee = Depends(deps.get_current_active_employee),
-) -> Any:
+) -> List[Owner]:
     """
     Gets vehicle's owners information.
     """
@@ -137,7 +134,7 @@ async def update_vehicle(
     vehicle_id: str,
     vehicle_in: UpdateVehicle,
     current_employee: Employee = Depends(deps.get_current_techician),
-) -> Any:
+) -> Vehicle:
     """
     Update a vehicle's profile.
     """
@@ -162,7 +159,7 @@ async def create_owner_vehicle(
     vehicle_id: str,
     owner_id: str,
     current_employee: Employee = Depends(deps.get_current_techician),
-) -> Any:
+) -> VehicleXOwner:
     """
     Create new owner vehicle.
     """
