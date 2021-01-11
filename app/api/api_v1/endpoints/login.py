@@ -82,7 +82,7 @@ async def owner_access_token(identity_card: str) -> Any:
 
     # Enviar correo/mensaje con el código
 
-    flag = send_code_email(
+    flag = await send_code_email(
         email_to=owner.email,
         code=code,
     )

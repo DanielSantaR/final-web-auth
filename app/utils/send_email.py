@@ -8,7 +8,7 @@ from app.core.config import Settings, get_settings
 settings: Settings = get_settings()
 
 
-def send_email(*, email_to: str, subject: str, message: Union[str, MIMEText]) -> bool:
+async def send_email(*, email_to: str, subject: str, message: Union[str, MIMEText]) -> bool:
     try:
         msg = MIMEMultipart()
         # create message object instance
@@ -34,16 +34,16 @@ def send_email(*, email_to: str, subject: str, message: Union[str, MIMEText]) ->
         return False
 
 
-def send_code_email(*, email_to: str, code: str):
+async def send_code_email(*, email_to: str, code: str):
     with open("./app/email_templates/send_code.html") as f:
         template_str = f.read()
     subject = "Security Code"
     message = MIMEText(template_str.format(code=code), "html")
-    flag = send_email(email_to=email_to, subject=subject, message=message)
+    flag = await send_email(email_to=email_to, subject=subject, message=message)
     return flag
 
 
-def send_new_account(*, email_to: str, name: str, username: str):
+async def send_new_account(*, email_to: str, name: str, username: str):
     with open("./app/email_templates/new_account.html") as f:
         template_str = f.read()
     subject = "Thanks for Create a new Account"
@@ -55,11 +55,11 @@ def send_new_account(*, email_to: str, name: str, username: str):
         ),
         "html",
     )
-    flag = send_email(email_to=email_to, subject=subject, message=message)
+    flag = await send_email(email_to=email_to, subject=subject, message=message)
     return flag
 
 
-def send_assigned_vehicle(*, email_to: str,  plate: str, brand: str, model: str, color: str, vehicle_type: str):
+async def send_assigned_vehicle(*, email_to: str,  plate: str, brand: str, model: str, color: str, vehicle_type: str):
     with open("./app/email_templates/assigned_vehicle.html") as f:
         template_str = f.read()
     subject = "A vehicle has been assigned"
@@ -73,23 +73,23 @@ def send_assigned_vehicle(*, email_to: str,  plate: str, brand: str, model: str,
         ),
         "html",
     )
-    flag = send_email(email_to=email_to, subject=subject, message=message)
+    flag = await send_email(email_to=email_to, subject=subject, message=message)
     return flag
 
     
-def send_updated_personal_information(*, email_to: str):
+async def send_updated_personal_information(*, email_to: str):
     with open("./app/email_templates/updated_personal_information.html") as f:
         template_str = f.read()
     subject = "Update Personal Information"
     message = MIMEText(
         template_str.format(),"html",
     )
-    flag = send_email(email_to=email_to, subject=subject, message=message)
+    flag = await send_email(email_to=email_to, subject=subject, message=message)
     return flag
 
 
     
-def send_reparation_detail(*, email_to: str,  description: str, cost: float):
+async def send_reparation_detail(*, email_to: str,  description: str, cost: float):
     
     with open("./app/email_templates/reparation_detail.html") as f:
         template_str = f.read()
@@ -101,11 +101,11 @@ def send_reparation_detail(*, email_to: str,  description: str, cost: float):
         ),
         "html",
     )
-    flag = send_email(email_to=email_to, subject=subject, message=message)
+    flag = await send_email(email_to=email_to, subject=subject, message=message)
     return flag
 
 
-def send_new_owner(*, email_to: str, identity_card: str, name: str, surname: str, phone: str):
+async def send_new_owner(*, email_to: str, identity_card: str, name: str, surname: str, phone: str):
     with open("./app/email_templates/new_owner.html") as f:
         template_str = f.read()
     subject = "New account created successfully"
@@ -119,16 +119,16 @@ def send_new_owner(*, email_to: str, identity_card: str, name: str, surname: str
         ),
         "html",
     )
-    flag = send_email(email_to=email_to, subject=subject, message=message)
+    flag = await send_email(email_to=email_to, subject=subject, message=message)
     return flag
 
     
-def send_updated_vehicle(*, email_to: str):
+async def send_updated_vehicle(*, email_to: str):
     with open("./app/email_templates/updated_vehicle.html") as f:
         template_str = f.read()
     subject = "Update Vehicle Information"
     message = MIMEText(
         template_str.format(),"html",
     )
-    flag = send_email(email_to=email_to, subject=subject, message=message)
+    flag = await send_email(email_to=email_to, subject=subject, message=message)
     return flag

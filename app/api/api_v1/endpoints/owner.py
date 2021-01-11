@@ -10,6 +10,7 @@ from app.schemas.owner import BaseOwner, CreateOwner, Owner, UpdateOwner
 from app.schemas.search import OwnerQueryParams
 from app.schemas.vehicle import Vehicle
 from app.services.owner import owner_service
+from app.utils.send_email import send_new_owner
 
 settings: Settings = get_settings()
 
@@ -49,6 +50,15 @@ async def create(
         **owner_in.dict(),
     )
     owner = await owner_service.create(owner_in=owner)
+
+    if owner_in.email:
+        await send_new_owner(
+            email_to=owner_in.email,
+            identity_card=owner_in.identity_card,
+            name=owner_in.names,
+            surname=owner_in.surnames,
+            phone=owner_in.phone,
+        )    
     return owner
 
 

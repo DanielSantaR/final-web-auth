@@ -10,6 +10,8 @@ from app.schemas.search import VehicleQueryParams
 from app.schemas.vehicle import BaseVehicle, CreateVehicle, UpdateVehicle, Vehicle
 from app.schemas.vehicle_x_owner import VehicleXOwner
 from app.services.vehicle import vehicle_service
+from app.services.owner import owner_service
+from app.utils.send_email import send_assigned_vehicle, send_updated_vehicle
 
 router = APIRouter()
 
@@ -141,6 +143,12 @@ async def update_vehicle(
     vehicle = await vehicle_service.update(vehicle_id=vehicle_id, vehicle_in=vehicle_in)
     if not vehicle:
         return JSONResponse(status_code=404, content={"detail": "No vehicle found"})
+
+    vehicle = await vehicle_service.get_by_plate(vehicle_id = vehicle_id)
+    owner = await owner_service.get_by_id(owner_id = vehicle["owner_id"])
+    await send_updated_vehicle(
+        email_to=owner["email"],
+    )
     return vehicle
 
 
@@ -166,4 +174,16 @@ async def create_owner_vehicle(
     vehicle = await vehicle_service.create_owner_vehicle(
         vehicle_id=vehicle_id, owner_id=owner_id
     )
+    
+    if vehicle:
+        owner = await owner_service.get_by_id(owner_id = owner_id)
+        vehicle = await vehicle_service.get_by_plate(vehicle_id = vehicle_id)
+        await send_assigned_vehicle(
+            email_to=owner["email"],
+            plate = vehicle["plate"],
+            brand = vehicle["brand"],
+            model = vehicle["model"],
+            color = vehicle["color"],
+            vehicle_type = vehicle["vehicle_type"]
+        )
     return vehicle
