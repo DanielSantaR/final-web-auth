@@ -13,7 +13,6 @@ from app.schemas.reparation_detail import (
     UpdateReparationDetail,
 )
 from app.services.reparation_details import reparation_detail_service
-from app.services.owner import owner_service
 from app.services.vehicle import vehicle_service
 from app.utils.send_email import send_reparation_detail
 
@@ -45,15 +44,15 @@ async def create_reparation_detail(
         detail=detail,
         employee_id=current_employee["identity_card"],
     )
-    
+
     if detail:
-        vehicle = await vehicle_service.get_by_plate(vehicle_id = vehicle_id)
-        owner = await owner_service.get_by_id(owner_id = vehicle["owner_id"])
-        await send_reparation_detail(
-            email_to=owner["email"],
-            description = detail["description"],
-            cost = detail["cost"]
-        )
+        vehicle_owners = await vehicle_service.get_vehicle_owners(vehicle_id=vehicle_id)
+        for owner in vehicle_owners:
+            await send_reparation_detail(
+                email_to=owner["email"],
+                description=detail["description"],
+                cost=detail["cost"],
+            )
 
     return detail
 

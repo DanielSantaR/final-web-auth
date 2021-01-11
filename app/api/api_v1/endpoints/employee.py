@@ -8,7 +8,7 @@ from app.core.config import Settings, get_settings
 from app.schemas.employee import CreateEmployee, Employee, UpdateEmployee
 from app.schemas.search import EmployeeQueryParams
 from app.services.employee import employee_service
-from app.utils.send_email import send_updated_personal_information
+from app.utils.send_email import send_new_account, send_updated_personal_information
 
 settings: Settings = get_settings()
 
@@ -150,7 +150,7 @@ async def update_employee(
     )
     if not employee:
         return JSONResponse(status_code=404, content={"detail": "No employee found"})
-    
+
     await send_updated_personal_information(
         email_to=employee["email"],
     )

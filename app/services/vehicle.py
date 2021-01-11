@@ -83,11 +83,12 @@ class VehicleService:
         return response
 
     async def update(
-        self, *, vehicle_id: str, vehicle_in: UpdateVehicle
+        self, *, vehicle_id: str, vehicle_in: UpdateVehicle, employee_id: str
     ) -> VehicleInDB:
         url = f"{settings.DATABASE_URL}/api/vehicles/{vehicle_id}"
         header = {"Content-Type": "application/json"}
         user = vehicle_in.dict()
+        user["update_employee_id"] = employee_id
         response = await httpx_client.patch(
             url_service=url, status_response=200, body=user, headers=header, timeout=40
         )
