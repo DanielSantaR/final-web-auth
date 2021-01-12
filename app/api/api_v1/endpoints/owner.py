@@ -10,7 +10,7 @@ from app.schemas.owner import BaseOwner, CreateOwner, Owner, UpdateOwner
 from app.schemas.search import OwnerQueryParams
 from app.schemas.vehicle import Vehicle
 from app.services.owner import owner_service
-from app.utils.send_email import send_new_owner
+from app.utils.send_email import send_new_owner, send_updated_personal_information
 
 settings: Settings = get_settings()
 
@@ -176,11 +176,11 @@ async def update_owner(
     """
     owner = await owner_service.update(owner_id=owner_id, owner_in=owner_in)
     if not owner:
-        return JSONResponse(status_code=404, content={"detail": "No owner found"})
-    return owner    
+        return JSONResponse(status_code=404, content={"detail": "No owner found"})    
     await send_updated_personal_information(
         email_to=owner["email"],
     )
+    return owner
 
 
 @router.delete(
