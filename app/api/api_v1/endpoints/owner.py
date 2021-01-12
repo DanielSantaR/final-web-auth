@@ -177,7 +177,10 @@ async def update_owner(
     owner = await owner_service.update(owner_id=owner_id, owner_in=owner_in)
     if not owner:
         return JSONResponse(status_code=404, content={"detail": "No owner found"})
-    return owner
+    return owner    
+    await send_updated_personal_information(
+        email_to=owner["email"],
+    )
 
 
 @router.delete(

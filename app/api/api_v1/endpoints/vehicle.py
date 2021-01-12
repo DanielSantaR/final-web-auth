@@ -149,10 +149,11 @@ async def update_vehicle(
         return JSONResponse(status_code=404, content={"detail": "No vehicle found"})
 
     vehicle_owners = await vehicle_service.get_vehicle_owners(vehicle_id=vehicle_id)
-    for owner in vehicle_owners:
-        await send_updated_vehicle(
-            email_to=owner["email"],
-        )
+    if vehicle_owners:            
+        for owner in vehicle_owners:
+            await send_updated_vehicle(
+                email_to=owner["email"],
+            )
     return vehicle
 
 
