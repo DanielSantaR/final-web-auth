@@ -16,6 +16,8 @@ from app.services.reparation_details import reparation_detail_service
 from app.services.vehicle import vehicle_service
 from app.utils.send_email import send_reparation_detail
 
+# from app.schemas.vehicle import UpdateVehicle
+
 router = APIRouter()
 
 
@@ -155,7 +157,7 @@ async def update_reparation_detail(
     current_employee: Employee = Depends(deps.get_current_techician),
 ) -> ReparationDetail:
     """
-    Create new reparation detail for the vehicle.
+    Update a reparation detail for the vehicle.
     """
     detail = await reparation_detail_service.update_detail(
         reparation_id=reparation_id,
@@ -167,6 +169,13 @@ async def update_reparation_detail(
             status_code=404,
             content={"detail": f"No reparation detail found for vehicle {vehicle_id}"},
         )
+    # if detail["state"]:
+    #     update_vehicle = UpdateVehicle(state=detail["state"])
+    #     await vehicle_service.update(
+    #         vehicle_id=vehicle_id,
+    #         vehicle_in=update_vehicle,
+    #         employee_id=current_employee["identity_card"],
+    #     )
     return detail
 
 

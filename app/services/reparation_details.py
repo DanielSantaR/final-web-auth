@@ -45,7 +45,7 @@ class ReparationDetailService:
         detail.employee_id = employee_id
         response = await httpx_client.patch(
             url_service=url,
-            status_response=201,
+            status_response=200,
             body=detail.dict(),
             headers=header,
             timeout=40,

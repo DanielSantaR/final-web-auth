@@ -58,7 +58,7 @@ async def create(
             name=owner_in.names,
             surname=owner_in.surnames,
             phone=owner_in.phone,
-        )    
+        )
     return owner
 
 
@@ -176,7 +176,7 @@ async def update_owner(
     """
     owner = await owner_service.update(owner_id=owner_id, owner_in=owner_in)
     if not owner:
-        return JSONResponse(status_code=404, content={"detail": "No owner found"})    
+        return JSONResponse(status_code=404, content={"detail": "No owner found"})
     await send_updated_personal_information(
         email_to=owner["email"],
     )
