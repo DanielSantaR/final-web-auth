@@ -19,7 +19,6 @@ class CreateVehicle(BaseVehicle):
 
 
 class UpdateVehicle(BaseModel):
-    update_employee: Optional[str]
     brand: Optional[str]
     model: Optional[str]
     color: Optional[str]

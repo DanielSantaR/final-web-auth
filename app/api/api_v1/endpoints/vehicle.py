@@ -1,18 +1,17 @@
-from typing import Any, List
+from typing import List, Optional
 
 from fastapi import APIRouter, Depends, HTTPException
 from starlette.responses import JSONResponse
 
 from app.api import deps
-from app.core.config import Settings, get_settings
 from app.schemas.employee import Employee
 from app.schemas.owner import Owner
 from app.schemas.search import VehicleQueryParams
 from app.schemas.vehicle import BaseVehicle, CreateVehicle, UpdateVehicle, Vehicle
+from app.schemas.vehicle_x_owner import VehicleXOwner
+from app.services.owner import owner_service
 from app.services.vehicle import vehicle_service
-
-settings: Settings = get_settings()
-
+from app.utils.send_email import send_assigned_vehicle, send_updated_vehicle
 
 router = APIRouter()
 
@@ -32,7 +31,7 @@ async def create_vehicle(
     *,
     vehicle_in: BaseVehicle,
     current_employee: Employee = Depends(deps.get_current_techician),
-) -> Any:
+) -> Vehicle:
     """
     Create new vehicle.
     """
@@ -67,7 +66,7 @@ async def get_vehicle_by_id(
     *,
     vehicle_id: str,
     current_employee: Employee = Depends(deps.get_current_active_employee),
-) -> Any:
+) -> Vehicle:
     """
     Gets vehicle's information.
     """
@@ -91,7 +90,7 @@ async def get_all(
     *,
     query_args: VehicleQueryParams = Depends(),
     current_employee: Employee = Depends(deps.get_current_active_employee),
-):
+) -> Optional[List[Vehicle]]:
     vehicles = await vehicle_service.get_all(query_args=query_args)
     if vehicles:
         return vehicles
@@ -113,7 +112,7 @@ async def get_owners_vehicles(
     *,
     vehicle_id: str,
     current_employee: Employee = Depends(deps.get_current_active_employee),
-) -> Any:
+) -> List[Owner]:
     """
     Gets vehicle's owners information.
     """
@@ -137,13 +136,24 @@ async def update_vehicle(
     vehicle_id: str,
     vehicle_in: UpdateVehicle,
     current_employee: Employee = Depends(deps.get_current_techician),
-) -> Any:
+) -> Vehicle:
     """
     Update a vehicle's profile.
     """
-    vehicle = await vehicle_service.update(vehicle_id=vehicle_id, vehicle_in=vehicle_in)
+    vehicle = await vehicle_service.update(
+        vehicle_id=vehicle_id,
+        vehicle_in=vehicle_in,
+        employee_id=current_employee["identity_card"],
+    )
     if not vehicle:
         return JSONResponse(status_code=404, content={"detail": "No vehicle found"})
+
+    vehicle_owners = await vehicle_service.get_vehicle_owners(vehicle_id=vehicle_id)
+    if vehicle_owners:
+        for owner in vehicle_owners:
+            await send_updated_vehicle(
+                email_to=owner["email"],
+            )
     return vehicle
 
 
@@ -162,11 +172,23 @@ async def create_owner_vehicle(
     vehicle_id: str,
     owner_id: str,
     current_employee: Employee = Depends(deps.get_current_techician),
-) -> Any:
+) -> VehicleXOwner:
     """
     Create new owner vehicle.
     """
     vehicle = await vehicle_service.create_owner_vehicle(
         vehicle_id=vehicle_id, owner_id=owner_id
     )
+
+    if vehicle:
+        owner = await owner_service.get_by_id(owner_id=owner_id)
+        vehicle = await vehicle_service.get_by_plate(vehicle_id=vehicle_id)
+        await send_assigned_vehicle(
+            email_to=owner["email"],
+            plate=vehicle["plate"],
+            brand=vehicle["brand"],
+            model=vehicle["model"],
+            color=vehicle["color"],
+            vehicle_type=vehicle["vehicle_type"],
+        )
     return vehicle

@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 from app.core.config import Settings, get_settings
 from app.infra.httpx.client import HTTPXClient
@@ -56,7 +56,7 @@ class VehicleService:
         self,
         *,
         query_args: VehicleQueryParams,
-    ) -> List[Vehicle]:
+    ) -> Optional[List[Vehicle]]:
         url = f"{settings.DATABASE_URL}/api/vehicles"
         header = {"Content-Type": "application/json"}
         payload = query_args.__dict__
@@ -83,11 +83,12 @@ class VehicleService:
         return response
 
     async def update(
-        self, *, vehicle_id: str, vehicle_in: UpdateVehicle
+        self, *, vehicle_id: str, vehicle_in: UpdateVehicle, employee_id: str
     ) -> VehicleInDB:
         url = f"{settings.DATABASE_URL}/api/vehicles/{vehicle_id}"
         header = {"Content-Type": "application/json"}
         user = vehicle_in.dict()
+        user["update_employee_id"] = employee_id
         response = await httpx_client.patch(
             url_service=url, status_response=200, body=user, headers=header, timeout=40
         )

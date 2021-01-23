@@ -78,7 +78,10 @@ def get_current_manager(
 def get_current_assistant(
     current_employee=Security(get_current_active_employee),
 ) -> Employee:
-    if current_employee["role"] != "assistant":
+    if (
+        current_employee["role"] != "assistant"
+        and current_employee["role"] != "manager"
+    ):
         raise HTTPException(
             status_code=400, detail="The employee doesn't have enough privileges"
         )

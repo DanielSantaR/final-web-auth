@@ -9,15 +9,15 @@ class BaseReparationDetail(BaseModel):
     cost: Optional[float]
     spare_parts: Optional[List[str]]
     state: str
-    vehicle_id: str
-    employee_id: str
 
 
 class CreateReparationDetail(BaseReparationDetail):
-    pass
+    employee_id: str
+    vehicle_id: str
 
 
 class UpdateReparationDetail(BaseModel):
+    employee_id: Optional[str]
     description: Optional[str]
     cost: Optional[float]
     spare_parts: Optional[List[str]]
@@ -26,6 +26,8 @@ class UpdateReparationDetail(BaseModel):
 
 class ReparationDetailInDB(BaseReparationDetail):
     id: int
+    employee_id: str
+    vehicle_id: str
     created_at: datetime
     last_modified: datetime
 
