@@ -176,13 +176,19 @@ async def create_owner_vehicle(
     """
     Create new owner vehicle.
     """
-    vehicle = await vehicle_service.create_owner_vehicle(
+
+    vehicle = await vehicle_service.get_by_plate(vehicle_id=vehicle_id)
+    if not vehicle:
+        return JSONResponse(status_code=404, content={"detail": "No vehicle found"})
+
+    owner = await owner_service.get_by_id(owner_id=owner_id)
+    if not owner:
+        return JSONResponse(status_code=404, content={"detail": "No owner found"})
+
+    vehicle_owner = await vehicle_service.create_owner_vehicle(
         vehicle_id=vehicle_id, owner_id=owner_id
     )
-
-    if vehicle:
-        owner = await owner_service.get_by_id(owner_id=owner_id)
-        vehicle = await vehicle_service.get_by_plate(vehicle_id=vehicle_id)
+    if vehicle_owner:
         await send_assigned_vehicle(
             email_to=owner["email"],
             plate=vehicle["plate"],
@@ -190,5 +196,10 @@ async def create_owner_vehicle(
             model=vehicle["model"],
             color=vehicle["color"],
             vehicle_type=vehicle["vehicle_type"],
+        )
+    else:
+        return JSONResponse(
+            status_code=404,
+            content={"detail": "The owner is already assigned to the vehicle"},
         )
     return vehicle
